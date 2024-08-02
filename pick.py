@@ -17,7 +17,7 @@ class Pick(pygame.sprite.Sprite):
         self.rect.y += self.velY
 
 def makePick():
-    pick_x = random.randint(0, definitions.screen_width - 20)  # Correctly calculate x position
+    pick_x = random.randint(definitions.screen_width // 2 - 350, definitions.screen_width // 2  + 350)  # Correctly calculate x position
     pick_y = random.randint(-50, -20)  # Starting above the screen
     pick = Pick(pick_x, pick_y)
     return pick
@@ -27,7 +27,7 @@ def bottomScreenPick(pick_group):
     weights = [.75,.85,.125]
     pick_add = random.choices(options,weights,k=1)
     for pick in pick_group:
-        if pick.rect.bottom >= definitions.screen_height -100:
+        if pick.rect.bottom >= definitions.screen_height -130:
             pick.kill()
             if pick_add[0] > 0:
                 for num in pick_add:

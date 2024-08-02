@@ -1,5 +1,5 @@
 import pygame
-BACKGROND = pygame.image.load('Sprites/background.jpg')
+BACKGROUND = pygame.image.load('Sprites/background.jpg')
 game_music = 'Music/Game_Music.mp3'
 main_menu_music = 'Music/main_menu_track.mp3'
 death_sound = 'Music/death_sound.mp3'

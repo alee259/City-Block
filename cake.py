@@ -17,7 +17,7 @@ class Cake(pygame.sprite.Sprite):
         self.rect.y += self.velY
 
 def makeCake():
-    cake_x = random.randint(0, definitions.screen_width - 20)  # Correctly calculate x position
+    cake_x = random.randint(definitions.screen_width // 2 - 350, definitions.screen_width // 2  + 350)  # Correctly calculate x position
     cake_y = random.randint(-50, -20)  # Starting above the screen
     cake = Cake(cake_x, cake_y)
     return cake
@@ -27,7 +27,7 @@ def bottomScreenCake(cake_group):
     weights = [.15,.85,.1]
     cake_add = random.choices(options,weights,k=1)
     for cake in cake_group:
-        if cake.rect.bottom >= definitions.screen_height -100:
+        if cake.rect.bottom >= definitions.screen_height -130:
             cake.kill()
             if cake_add[0] > 0:
                 for num in cake_add:

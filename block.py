@@ -17,7 +17,7 @@ class Block(pygame.sprite.Sprite):
         self.rect.y += self.velY
 
 def makeBlock():
-    block_x = random.randint(0, definitions.screen_width - 20)  # Correctly calculate x position
+    block_x = random.randint(definitions.screen_width // 2 - 350, definitions.screen_width // 2  + 350)  # Correctly calculate x position
     block_y = random.randint(-50, -20)  # Starting above the screen
     block = Block(block_x, block_y)
     return block
@@ -27,7 +27,7 @@ def bottomScreenBlock(block_group):
     weights = [.1,.85,.3]
     block_add = random.choices(options,weights,k=1)
     for block in block_group:
-        if block.rect.bottom >= definitions.screen_height - 100:
+        if block.rect.bottom >= definitions.screen_height - 130:
             block.kill()
             if block_add[0] > 0:
                 for num in block_add:

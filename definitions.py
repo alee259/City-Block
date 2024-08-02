@@ -2,25 +2,37 @@ import pygame
 import assets
 import random
 
-#var init
+# Get the current screen resolution
+pygame.init()
+infoObject = pygame.display.Info()
+screen_width = infoObject.current_w
+screen_height = infoObject.current_h
+
+# Original resolution
+original_screen_width = 700
+original_screen_height = 1000
+
+# Calculate scaling factors
+scaling_factor_x = screen_width / original_screen_width
+scaling_factor_y = screen_height / original_screen_height
+
+# Variable initialization
 TITLE = 'City Block'
-OBJ_SIZE = 20
+OBJ_SIZE = int(20 * scaling_factor_x)
 player_height = 160
 player_width = 116
-screen_width = 700
-screen_height = 1000
 speed_increase = 0
 SCORE_INCREMENT = 100
 bomb_increase = 0
 
-#colors
-RED  = (255,0,0)
-BLUE = (0,0,255)
-GREEN = (0,255,0)
-BG = (50,50,50)
-ORANGE = (250,120,60)
-WHITE = (255,255,255)
-PINK = (255,192,203)
+# Colors
+RED = (255, 0, 0)
+BLUE = (0, 0, 255)
+GREEN = (0, 255, 0)
+BG = (50, 50, 50)
+ORANGE = (250, 120, 60)
+WHITE = (255, 255, 255)
+PINK = (255, 192, 203)
 
 class Player(pygame.sprite.Sprite):
     def __init__(self, x, y):
@@ -59,10 +71,10 @@ class Player(pygame.sprite.Sprite):
 
         self.rect.x += self.velX
 
-        if self.rect.left < 0-40:
-            self.rect.left = 0-40
-        if self.rect.right > screen_width+40:
-            self.rect.right = screen_width+40
+        if self.rect.left < screen_width // 2 - 350 - 40:
+            self.rect.left = screen_width // 2 - 350 - 40
+        if self.rect.right > screen_width // 2 + 350 + 40:
+            self.rect.right = screen_width // 2 + 350 + 40
 
 
         if self.running == True:

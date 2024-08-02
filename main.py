@@ -6,12 +6,13 @@ import block
 import cake
 import bomb
 import pick
-import sys   
+import sys
+
 
 #pygame init
 pygame.mixer.pre_init(44100,16,2,4096)
 pygame.init()
-screen = pygame.display.set_mode((definitions.screen_width, definitions.screen_height))
+screen = pygame.display.set_mode((definitions.screen_width, definitions.screen_height), pygame.RESIZABLE)
 pygame.display.set_caption(definitions.TITLE)
 pygame.display.set_caption('Score:')
 pygame.display.set_caption('Lives:')
@@ -25,33 +26,34 @@ FONT3 = pygame.font.Font(assets.main_font, 70)
 def drawScore(screen, score):
     score_text = f"Score: {score}"
     text_screen = FONT0.render(score_text, True, definitions.WHITE)
-    screen.blit(text_screen, (10,960))
+    screen.blit(text_screen, (definitions.screen_width // 2-340, 960 * definitions.scaling_factor_y))
 
 def drawLives(screen, lives):
     lives_text = f"Lives: {lives}"
     text_screen = FONT0.render(lives_text, True, definitions.WHITE)
-    screen.blit(text_screen, (555,960))
+    screen.blit(text_screen, (definitions.screen_width // 2+210, 960 * definitions.scaling_factor_y))
 
 def drawLevel(screen):
-    level_text = f"Level: {definitions.speed_increase+1}"
+    level_text = f"Level: {definitions.speed_increase + 1}"
     text = FONT0.render(level_text, True, definitions.WHITE)
-    level_rect = text.get_rect(center=(definitions.screen_width // 2,975))
+    level_rect = text.get_rect(center=(definitions.screen_width // 2, 972 * definitions.scaling_factor_y))
     screen.blit(text, level_rect)
 
 def drawFloor(screen):
     floor_tile = pygame.image.load(assets.floor)
+    floor_start = definitions.screen_width // 2 - 350
     for num in range(14):
-        screen.blit(floor_tile,(num*50,890))
-
+        screen.blit(floor_tile, (num * 50 + floor_start, 890 * definitions.scaling_factor_y))
 
 def drawBackground(screen):
-    size = pygame.transform.scale(assets.BACKGROND, (800,1200))
-    screen.blit(size,(0,0))
+    background_image = pygame.transform.scale(assets.BACKGROUND, (definitions.original_screen_width, definitions.screen_height))
+    background_rect = background_image.get_rect(center=(definitions.screen_width // 2, 500 * definitions.scaling_factor_y)) 
+    screen.blit(background_image, background_rect)
     
 #screens
 def play():
-
-    start_y = definitions.screen_height - 50 - definitions.player_height  # 100 pixels from the bottom
+    global screen
+    start_y = 890 * definitions.scaling_factor_y - definitions.player_height // 2 - 20 # Adjusted based on scaling
     player_group = pygame.sprite.Group()
     player = definitions.Player(definitions.screen_width // 2 - definitions.player_width // 2, start_y)  # Center horizontally
     player_group.add(player)
@@ -84,6 +86,32 @@ def play():
     run = True
 
     while run:
+
+        #event handler
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                run = False
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_a:
+                    player.left_pressed = True
+                    player.animate(1)
+                if event.key == pygame.K_d:
+                    player.right_pressed = True
+                    player.animate(1)
+                if event.key == pygame.K_ESCAPE:
+                    pause()
+            if event.type == pygame.KEYUP:
+                if event.key == pygame.K_a:
+                    player.left_pressed = False
+                    player.animate(0)
+                if event.key == pygame.K_d:
+                    player.right_pressed = False
+                    player.animate(0)
+            if event.type == pygame.VIDEORESIZE:
+                definitions.screen_width, definitions.screen_height = event.w, event.h
+                definitions.scaling_factor_x = definitions.screen_width / definitions.original_screen_width
+                definitions.scaling_factor_y = definitions.screen_height / definitions.original_screen_height
+                screen = pygame.display.set_mode((definitions.screen_width, definitions.screen_height), pygame.RESIZABLE)
 
         #drawing objects
         screen.fill("black")
@@ -149,27 +177,6 @@ def play():
         if player.lives == 0:
             death()
 
-        #event handler
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                run = False
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_a:
-                    player.left_pressed = True
-                    player.animate(1)
-                if event.key == pygame.K_d:
-                    player.right_pressed = True
-                    player.animate(1)
-                if event.key == pygame.K_ESCAPE:
-                    pause()
-            if event.type == pygame.KEYUP:
-                if event.key == pygame.K_a:
-                    player.left_pressed = False
-                    player.animate(0)
-                if event.key == pygame.K_d:
-                    player.right_pressed = False
-                    player.animate(0)
-
         #update
         player_group.update()
         block_group.update()
@@ -193,7 +200,7 @@ def instructions():
         screen.fill("black")
         MOUSE_POS = pygame.mouse.get_pos()
         INSTRUCTIONS = FONT.render("Instructions", True, "white")
-        MENU_RECT = INSTRUCTIONS.get_rect(center=(definitions.screen_width // 2,150))
+        MENU_RECT = INSTRUCTIONS.get_rect(center=(definitions.screen_width // 2, 150 * definitions.scaling_factor_y))
         main_text1 = FONT2.render("The city has been destroyed!", True, "white")
         main_text2 = FONT2.render("Catch items to rebuild it, but avoid bombs!", True, "white")
         main_text3 = FONT2.render("Avoid the bombs, they will decrease your lives!", True, "white")
@@ -204,18 +211,19 @@ def instructions():
         main_text8 = FONT2.render("Every 100 score points, the game speeds up", True, "white")
         main_text9 = FONT2.render("and more bombs will spawn!", True, "white")
 
-        main_text1_rect = main_text1.get_rect(center=(definitions.screen_width // 2, 300))
-        main_text2_rect = main_text2.get_rect(center=(definitions.screen_width // 2, 350))
-        main_text3_rect = main_text3.get_rect(center=(definitions.screen_width // 2, 400))
-        main_text4_rect = main_text4.get_rect(center=(definitions.screen_width // 2, 450))
-        main_text5_rect = main_text5.get_rect(center=(definitions.screen_width // 2, 500))
-        main_text6_rect = main_text6.get_rect(center=(definitions.screen_width // 2, 550))
-        main_text7_rect = main_text7.get_rect(center=(definitions.screen_width // 2, 600))
-        main_text8_rect = main_text8.get_rect(center=(definitions.screen_width // 2, 650))
-        main_text9_rect = main_text9.get_rect(center=(definitions.screen_width // 2, 700))
+        main_text1_rect = main_text1.get_rect(center=(definitions.screen_width // 2, 300 * definitions.scaling_factor_y))
+        main_text2_rect = main_text2.get_rect(center=(definitions.screen_width // 2, 350 * definitions.scaling_factor_y))
+        main_text3_rect = main_text3.get_rect(center=(definitions.screen_width // 2, 400 * definitions.scaling_factor_y))
+        main_text4_rect = main_text4.get_rect(center=(definitions.screen_width // 2, 450 * definitions.scaling_factor_y))
+        main_text5_rect = main_text5.get_rect(center=(definitions.screen_width // 2, 500 * definitions.scaling_factor_y))
+        main_text6_rect = main_text6.get_rect(center=(definitions.screen_width // 2, 550 * definitions.scaling_factor_y))
+        main_text7_rect = main_text7.get_rect(center=(definitions.screen_width // 2, 600 * definitions.scaling_factor_y))
+        main_text8_rect = main_text8.get_rect(center=(definitions.screen_width // 2, 650 * definitions.scaling_factor_y))
+        main_text9_rect = main_text9.get_rect(center=(definitions.screen_width // 2, 700 * definitions.scaling_factor_y))
 
-        PLAY_BUTTON = definitions.Button(None, pos=(75,960),text_input = "PLAY", font=FONT, base_color = "#d7fcd4", hovering_color = "white")
-        QUIT = definitions.Button(None, pos=(625,960),text_input = "QUIT", font=FONT, base_color = "#d7fcd4", hovering_color = "white")
+
+        PLAY_BUTTON = definitions.Button(None, pos=(75 * definitions.scaling_factor_x,960 * definitions.scaling_factor_y ),text_input = "PLAY", font=FONT, base_color = "#d7fcd4", hovering_color = "white")
+        QUIT = definitions.Button(None, pos=(625 * definitions.scaling_factor_x ,960 * definitions.scaling_factor_y),text_input = "QUIT", font=FONT, base_color = "#d7fcd4", hovering_color = "white")
 
         screen.blit(INSTRUCTIONS, MENU_RECT)
         screen.blit(main_text1, main_text1_rect)
@@ -257,11 +265,11 @@ def death():
         screen.fill("black")
         MOUSE_POS = pygame.mouse.get_pos()
         DEATH_TEXT = FONT.render("You died!", True, "white")
-        MENU_RECT = DEATH_TEXT.get_rect(center=(definitions.screen_width // 2,250))
+        MENU_RECT = DEATH_TEXT.get_rect(center=(definitions.screen_width // 2,250 * definitions.scaling_factor_y))
 
-        QUIT = definitions.Button(None, pos=(definitions.screen_width // 2,550),text_input = "QUIT", font=FONT, base_color = "#d7fcd4", hovering_color = "white")
-        PLAY_AGAIN = definitions.Button(None, pos=(definitions.screen_width // 2,450),text_input = "PLAY AGAIN?", font=FONT, base_color = "#d7fcd4", hovering_color = "white")
-        MAIN_MENU = definitions.Button(None, pos=(definitions.screen_width // 2,650),text_input = "MAIN MENU", font=FONT, base_color = "#d7fcd4", hovering_color = "white")
+        QUIT = definitions.Button(None, pos=(definitions.screen_width // 2,550 * definitions.scaling_factor_y),text_input = "QUIT", font=FONT, base_color = "#d7fcd4", hovering_color = "white")
+        PLAY_AGAIN = definitions.Button(None, pos=(definitions.screen_width // 2,450 * definitions.scaling_factor_y),text_input = "PLAY AGAIN?", font=FONT, base_color = "#d7fcd4", hovering_color = "white")
+        MAIN_MENU = definitions.Button(None, pos=(definitions.screen_width // 2,650 * definitions.scaling_factor_y),text_input = "MAIN MENU", font=FONT, base_color = "#d7fcd4", hovering_color = "white")
 
         screen.blit(DEATH_TEXT, MENU_RECT)
 
@@ -297,12 +305,12 @@ def main_menu():
         screen.fill("black")
         MOUSE_POS = pygame.mouse.get_pos()
         MENU_TEXT = FONT.render("Main Menu", True, "white")
-        MENU_RECT = MENU_TEXT.get_rect(center=(definitions.screen_width // 2,230))
+        MENU_RECT = MENU_TEXT.get_rect(center=(definitions.screen_width // 2,230 * definitions.scaling_factor_y))
         TITLE_TEXT = FONT3.render("City Block", True, "white")
-        TITLE_RECT = TITLE_TEXT.get_rect(center=(definitions.screen_width // 2,110))
-        PLAY_BUTTON = definitions.Button(None, pos=(definitions.screen_width // 2,450),text_input = "PLAY", font=FONT, base_color = "#d7fcd4", hovering_color = "white")
-        INSTRUCTIONS = definitions.Button(None, pos=(definitions.screen_width // 2,600),text_input = "INSTRUCTIONS", font=FONT, base_color = "#d7fcd4", hovering_color = "white")
-        QUIT = definitions.Button(None, pos=(definitions.screen_width // 2,750),text_input = "QUIT", font=FONT, base_color = "#d7fcd4", hovering_color = "white")
+        TITLE_RECT = TITLE_TEXT.get_rect(center=(definitions.screen_width // 2,110 * definitions.scaling_factor_y ))
+        PLAY_BUTTON = definitions.Button(None, pos=(definitions.screen_width // 2,450 * definitions.scaling_factor_y),text_input = "PLAY", font=FONT, base_color = "#d7fcd4", hovering_color = "white")
+        INSTRUCTIONS = definitions.Button(None, pos=(definitions.screen_width // 2,600 * definitions.scaling_factor_y),text_input = "INSTRUCTIONS", font=FONT, base_color = "#d7fcd4", hovering_color = "white")
+        QUIT = definitions.Button(None, pos=(definitions.screen_width // 2,750 * definitions.scaling_factor_y),text_input = "QUIT", font=FONT, base_color = "#d7fcd4", hovering_color = "white")
 
         screen.blit(MENU_TEXT,MENU_RECT)
         screen.blit(TITLE_TEXT,TITLE_RECT)
@@ -335,11 +343,11 @@ def pause():
     while pause:
         screen.fill("black")
         MOUSE_POS = pygame.mouse.get_pos()
-        QUIT = definitions.Button(None, pos=(definitions.screen_width // 2,400),text_input = "QUIT", font=FONT, base_color = "#d7fcd4", hovering_color = "white")
-        RESUME = definitions.Button(None, pos=(definitions.screen_width // 2,550),text_input = "RESUME", font=FONT, base_color = "#d7fcd4", hovering_color = "white")
-        MAIN_MENU = definitions.Button(None, pos=(definitions.screen_width // 2,700),text_input = "MAIN MENU", font=FONT, base_color = "#d7fcd4", hovering_color = "white")
+        QUIT = definitions.Button(None, pos=(definitions.screen_width // 2,400 * definitions.scaling_factor_y),text_input = "QUIT", font=FONT, base_color = "#d7fcd4", hovering_color = "white")
+        RESUME = definitions.Button(None, pos=(definitions.screen_width // 2,550 * definitions.scaling_factor_y),text_input = "RESUME", font=FONT, base_color = "#d7fcd4", hovering_color = "white")
+        MAIN_MENU = definitions.Button(None, pos=(definitions.screen_width // 2,700 * definitions.scaling_factor_y),text_input = "MAIN MENU", font=FONT, base_color = "#d7fcd4", hovering_color = "white")
         PAUSE = FONT.render("PAUSE", True, "white")
-        PAUSE_RECT = PAUSE.get_rect(center=(definitions.screen_width // 2,200))
+        PAUSE_RECT = PAUSE.get_rect(center=(definitions.screen_width // 2,200 * definitions.scaling_factor_y))
         buttons = [QUIT,RESUME,MAIN_MENU]
 
         screen.blit(PAUSE, PAUSE_RECT)
