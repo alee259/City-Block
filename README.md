@@ -4,6 +4,6 @@ The objective of this game is to catch the falling blocks and pickaxes to increa
 # Controls
 Use A and D to move left and right, respectively
 
-#Items
+# Items
 Blocks increase score by 1, pickaxes by 2. Bombs decrease your lives, and cake gives you a life back
 
