@@ -10,7 +10,7 @@ class Bomb(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(pygame.image.load(assets.bomb).convert_alpha(), (30,30))
         self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect(topleft=(x, y))
-        self.velY = random.uniform(3 + definitions.speed_increase,7 + definitions.speed_increase)  # Vertical speed
+        self.velY = random.uniform(3 + definitions.speed_increase,6 + definitions.speed_increase)  # Vertical speed
 
     def update(self):
         # Move the bomb down

@@ -64,7 +64,7 @@ def play():
 
     #object setup
     block_group = pygame.sprite.Group()
-    numBlock = random.randint(9, 13)
+    numBlock = random.randint(9, 12)
     for _ in range(numBlock):
         block_group.add(block.makeBlock())
 
@@ -74,7 +74,7 @@ def play():
         cake_group.add(cake.makeCake())
 
     bomb_group = pygame.sprite.Group()
-    numBomb = random.randint(6+definitions.bomb_increase,8+definitions.bomb_increase)
+    numBomb = random.randint(4+definitions.bomb_increase,5+definitions.bomb_increase)
     for _ in range(numBomb):
         bomb_group.add(bomb.makeBomb())
 
