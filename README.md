@@ -10,5 +10,5 @@ Blocks increase score by 1, pickaxes by 2. Bombs decrease your lives, and cake g
 
 
 # Screenshots
-![Main Menu],(https://raw.githubusercontent.com/alee259/City-Block/main/Screenshots/ss1.png)
+![Main Menu],(https://github.com/alee259/City-Block/blob/main/Screenshots/ss1.png)
 ![Gameplay](https://github.com/user-attachments/assets/d96a8aea-450b-4e79-9027-1439db5544e5)
