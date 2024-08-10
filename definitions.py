@@ -34,15 +34,20 @@ ORANGE = (250, 120, 60)
 WHITE = (255, 255, 255)
 PINK = (255, 192, 203)
 
+#player class
 class Player(pygame.sprite.Sprite):
     def __init__(self, x, y):
         super().__init__()
         self.run_right = []
         self.idle_right = []
+        
+        #inserting animation slides
         for i in range(6):
             self.run_right.append(pygame.image.load(getattr(assets, f'mechanicr{i}')).convert_alpha())
         for i in range(2):
             self.idle_right.append(pygame.image.load(getattr(assets, f'mechanici{i}')).convert_alpha())
+
+        #animation for running and facing left
         self.run_left = [pygame.transform.flip(img, True, False) for img in self.run_right]
         self.idle_left = [pygame.transform.flip(img, True, False) for img in self.idle_right]
         self.current_run = 0
@@ -51,7 +56,10 @@ class Player(pygame.sprite.Sprite):
         self.image = self.idle_right[self.current_idle]
         self.facing_right = True
         self.rect = self.image.get_rect(topleft=(x, y))
+
+        #mask for collisions
         self.mask = pygame.mask.from_surface(self.image)
+
         self.x = x
         self.y = y
         self.left_pressed = False
@@ -60,8 +68,10 @@ class Player(pygame.sprite.Sprite):
         self.score = 0
         self.lives = 3
 
+    #updating the player
     def update(self):
         self.velX = 0
+        #movement
         if self.left_pressed and not self.right_pressed:
             self.velX = -self.speed
             self.facing_right = False
@@ -71,12 +81,13 @@ class Player(pygame.sprite.Sprite):
 
         self.rect.x += self.velX
 
+        #player movement boundaries
         if self.rect.left < screen_width // 2 - 350 - 40:
             self.rect.left = screen_width // 2 - 350 - 40
         if self.rect.right > screen_width // 2 + 350 + 40:
             self.rect.right = screen_width // 2 + 350 + 40
 
-
+        #animation logic
         if self.running == True:
             self.current_run += .065
             if self.current_run >= len(self.run_right):
@@ -94,7 +105,7 @@ class Player(pygame.sprite.Sprite):
             else:
                 self.image = self.idle_left[int(self.current_idle)]
 
-
+    #is player animated?
     def animate(self, int):
         if int == 1:
             self.running = True

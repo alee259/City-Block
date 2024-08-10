@@ -1,3 +1,4 @@
+#importing libraries
 import pygame
 import random
 import definitions
@@ -8,7 +9,6 @@ import bomb
 import pick
 import sys
 
-
 #pygame init
 pygame.mixer.pre_init(44100,16,2,4096)
 pygame.init()
@@ -18,9 +18,9 @@ pygame.display.set_caption('Score:')
 pygame.display.set_caption('Lives:')
 clock = pygame.time.Clock()
 FONT0 = pygame.font.Font(assets.main_font, 36)  # Use default font with size 36
-FONT = pygame.font.Font(assets.main_font, 48)  # Use default font with size 36
-FONT2 = pygame.font.Font(assets.main_font, 24)
-FONT3 = pygame.font.Font(assets.main_font, 70)
+FONT = pygame.font.Font(assets.main_font, 48)  # Use default font with size 48
+FONT2 = pygame.font.Font(assets.main_font, 24) # Use default font with size 24
+FONT3 = pygame.font.Font(assets.main_font, 70) # Use default font with size 70
 
 #drawing functions
 def drawScore(screen, score):
@@ -51,7 +51,7 @@ def drawBackground(screen):
     screen.blit(background_image, background_rect)
     
 #screens
-def play():
+def play(): #main game screen
     global screen
     start_y = 890 * definitions.scaling_factor_y - definitions.player_height // 2 - 20 # Adjusted based on scaling
     player_group = pygame.sprite.Group()
@@ -175,7 +175,7 @@ def play():
 
         #checking lives
         if player.lives == 0:
-            death()
+            death(player.score)
 
         #update
         player_group.update()
@@ -191,14 +191,20 @@ def play():
         clock.tick(120)
 
 def instructions():
+    #setting up music and window caption
     pygame.display.set_caption(definitions.TITLE)
     pygame.mixer.music.load(assets.main_menu_music)
     pygame.mixer.music.set_volume(0.5)
     pygame.mixer.music.play(-1)
 
+    #game loop for instructions screen
     while True:
+
+        #basic set up for screen and mouse position
         screen.fill("black")
         MOUSE_POS = pygame.mouse.get_pos()
+
+        #setting up text rendering
         INSTRUCTIONS = FONT.render("Instructions", True, "white")
         MENU_RECT = INSTRUCTIONS.get_rect(center=(definitions.screen_width // 2, 150 * definitions.scaling_factor_y))
         main_text1 = FONT2.render("The city has been destroyed!", True, "white")
@@ -211,6 +217,7 @@ def instructions():
         main_text8 = FONT2.render("Every 100 score points, the game speeds up", True, "white")
         main_text9 = FONT2.render("and more bombs will spawn!", True, "white")
 
+        #setting up rects for the text
         main_text1_rect = main_text1.get_rect(center=(definitions.screen_width // 2, 300 * definitions.scaling_factor_y))
         main_text2_rect = main_text2.get_rect(center=(definitions.screen_width // 2, 350 * definitions.scaling_factor_y))
         main_text3_rect = main_text3.get_rect(center=(definitions.screen_width // 2, 400 * definitions.scaling_factor_y))
@@ -221,10 +228,11 @@ def instructions():
         main_text8_rect = main_text8.get_rect(center=(definitions.screen_width // 2, 650 * definitions.scaling_factor_y))
         main_text9_rect = main_text9.get_rect(center=(definitions.screen_width // 2, 700 * definitions.scaling_factor_y))
 
-
+        #button setup
         PLAY_BUTTON = definitions.Button(None, pos=(75 * definitions.scaling_factor_x,960 * definitions.scaling_factor_y ),text_input = "PLAY", font=FONT, base_color = "#d7fcd4", hovering_color = "white")
         QUIT = definitions.Button(None, pos=(625 * definitions.scaling_factor_x ,960 * definitions.scaling_factor_y),text_input = "QUIT", font=FONT, base_color = "#d7fcd4", hovering_color = "white")
 
+        #placing objects onto screen
         screen.blit(INSTRUCTIONS, MENU_RECT)
         screen.blit(main_text1, main_text1_rect)
         screen.blit(main_text2, main_text2_rect)
@@ -236,11 +244,13 @@ def instructions():
         screen.blit(main_text8, main_text8_rect)
         screen.blit(main_text9, main_text9_rect)
 
+        #drawing buttons
         buttons = [PLAY_BUTTON, QUIT]
         for button in buttons:
             button.colorChange(MOUSE_POS)
             button.update(screen)
-
+            
+        #event handler
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -252,25 +262,36 @@ def instructions():
                     pygame.quit()
                     sys.exit()
         
+        #updating screen
         pygame.display.flip()
         clock.tick(120)
 
-def death():
+#death screen
+def death(score):
+    #background setup
     pygame.display.set_caption(definitions.TITLE)
     pygame.mixer.music.load(assets.death_sound)
     pygame.mixer.music.set_volume(0.5)
     pygame.mixer.music.play(1)
 
+    #main game loop
     while True:
         screen.fill("black")
         MOUSE_POS = pygame.mouse.get_pos()
+        
+
+        #text and rect setup for buttons and text
         DEATH_TEXT = FONT.render("You died!", True, "white")
         MENU_RECT = DEATH_TEXT.get_rect(center=(definitions.screen_width // 2,250 * definitions.scaling_factor_y))
-
         QUIT = definitions.Button(None, pos=(definitions.screen_width // 2,550 * definitions.scaling_factor_y),text_input = "QUIT", font=FONT, base_color = "#d7fcd4", hovering_color = "white")
         PLAY_AGAIN = definitions.Button(None, pos=(definitions.screen_width // 2,450 * definitions.scaling_factor_y),text_input = "PLAY AGAIN?", font=FONT, base_color = "#d7fcd4", hovering_color = "white")
         MAIN_MENU = definitions.Button(None, pos=(definitions.screen_width // 2,650 * definitions.scaling_factor_y),text_input = "MAIN MENU", font=FONT, base_color = "#d7fcd4", hovering_color = "white")
+        score_text = f"Score: {score}"
+        score_disp = FONT.render(score_text, True, definitions.WHITE)
+        score_rect = score_disp.get_rect(center=(definitions.screen_width // 2, 400 * definitions.scaling_factor_y))
 
+        #drawing text and buttons onto screen
+        screen.blit(score_disp, score_rect)
         screen.blit(DEATH_TEXT, MENU_RECT)
 
         buttons = [PLAY_AGAIN, QUIT,MAIN_MENU]
@@ -278,6 +299,7 @@ def death():
             button.colorChange(MOUSE_POS)
             button.update(screen)
 
+        #event handler
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -291,19 +313,26 @@ def death():
                 if buttons[2].input(MOUSE_POS):
                     main_menu()
         
+        #updating the screen
         pygame.display.flip()
         clock.tick(120)
 
+#main memu display function
 def main_menu():
+    
+    #background setup
     pygame.display.set_caption(definitions.TITLE)
     pygame.mixer.music.load(assets.main_menu_music)
     pygame.mixer.music.set_volume(0.5)
     pygame.mixer.music.play(-1)
                             
-
+    #game loop
     while True:
+        #background setup 
         screen.fill("black")
         MOUSE_POS = pygame.mouse.get_pos()
+
+        #text, button and rect setup
         MENU_TEXT = FONT.render("Main Menu", True, "white")
         MENU_RECT = MENU_TEXT.get_rect(center=(definitions.screen_width // 2,230 * definitions.scaling_factor_y))
         TITLE_TEXT = FONT3.render("City Block", True, "white")
@@ -312,15 +341,15 @@ def main_menu():
         INSTRUCTIONS = definitions.Button(None, pos=(definitions.screen_width // 2,600 * definitions.scaling_factor_y),text_input = "INSTRUCTIONS", font=FONT, base_color = "#d7fcd4", hovering_color = "white")
         QUIT = definitions.Button(None, pos=(definitions.screen_width // 2,750 * definitions.scaling_factor_y),text_input = "QUIT", font=FONT, base_color = "#d7fcd4", hovering_color = "white")
 
+        #drawing objects onto screen
         screen.blit(MENU_TEXT,MENU_RECT)
         screen.blit(TITLE_TEXT,TITLE_RECT)
-
-
         buttons = [PLAY_BUTTON, INSTRUCTIONS, QUIT]
         for button in buttons:
             button.colorChange(MOUSE_POS)
             button.update(screen)
 
+        #event handler
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -333,16 +362,22 @@ def main_menu():
                 if buttons[2].input(MOUSE_POS):
                     pygame.quit()
                     sys.exit()
-        
+
+        #updating screen        
         pygame.display.flip()
         clock.tick(120)
 
+#pause screen
 def pause():
     pause = True
 
+    #game loop (only while pause is on)
     while pause:
+        #background setup
         screen.fill("black")
         MOUSE_POS = pygame.mouse.get_pos()
+
+        #setting up buttons, texts and their rects
         QUIT = definitions.Button(None, pos=(definitions.screen_width // 2,400 * definitions.scaling_factor_y),text_input = "QUIT", font=FONT, base_color = "#d7fcd4", hovering_color = "white")
         RESUME = definitions.Button(None, pos=(definitions.screen_width // 2,550 * definitions.scaling_factor_y),text_input = "RESUME", font=FONT, base_color = "#d7fcd4", hovering_color = "white")
         MAIN_MENU = definitions.Button(None, pos=(definitions.screen_width // 2,700 * definitions.scaling_factor_y),text_input = "MAIN MENU", font=FONT, base_color = "#d7fcd4", hovering_color = "white")
@@ -350,12 +385,14 @@ def pause():
         PAUSE_RECT = PAUSE.get_rect(center=(definitions.screen_width // 2,200 * definitions.scaling_factor_y))
         buttons = [QUIT,RESUME,MAIN_MENU]
 
+        #placing text and buttons on the screen
         screen.blit(PAUSE, PAUSE_RECT)
 
         for button in buttons:
             button.colorChange(MOUSE_POS)
             button.update(screen)
 
+        #event handler
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
@@ -372,6 +409,7 @@ def pause():
                 if event.key == pygame.K_ESCAPE:
                     pause = False
         
+        #updating the screen
         pygame.display.flip()
         clock.tick(120)
                     
