@@ -175,6 +175,7 @@ def play(): #main game screen
 
         #checking lives
         if player.lives == 0:
+            definitions.speed_increase = 0
             death(player.score)
 
         #update
@@ -306,6 +307,7 @@ def death(score):
                 sys.exit()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if buttons[0].input(MOUSE_POS):
+                    speed = 0
                     play()
                 if buttons[1].input(MOUSE_POS):
                     pygame.quit()
